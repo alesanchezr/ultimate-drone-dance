@@ -8,6 +8,9 @@ untangle = "*"
 pyparrot = "*"
 zeroconf = "*"
 bluepy = "*"
+python-dotenv = "*"
+pyinquirer = "*"
+requests = "*"
 
 [dev-packages]
 

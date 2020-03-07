@@ -1,41 +1,82 @@
 
-"""
-Demo the direct flying for the python interface
-Author: Amy McGovern
-"""
-import os
-
 from pyparrot.Minidrone import Mambo
+from _utils import get_all_scripts, get_script_content, get_file_content, run_script, DeviceIDValidator, delete_all_scripts
+from PyInquirer import prompt, print_json
 
-# you will need to change this to the address of YOUR mambo
-# Broken D0:3A:F7:D9:E6:20
+print("Welcome!!! 😃")
+resp = prompt([
+    {
+        'type': 'input',
+        'name': 'drone_id',
+        'message': 'Please specify the Drone Device ID (E.g: E0:AF:34:QF:43:SD)',
+        'validate': DeviceIDValidator
+    }
+])
 
-mamboAddr = os.environ.get('DRONE_ADDRESS')
-mamboAddr = 'e0:14:60:27:3d:cf'
-print("Address found: ", mamboAddr)
-# make my mambo object
-# remember to set True/False for the wifi depending on if you are using the wifi or the BLE to connect
-mambo = Mambo(mamboAddr, use_wifi=False)
+if 'drone_id' not in resp:
+    print("Quitting the application")
+    exit()
+else:
+    drone_id = resp['drone_id']
+    print("Trying to connect with "+drone_id+"...")
+    # mambo = Mambo(drone_id, use_wifi=False)
+    # success = mambo.connect(num_retries=3)
+    success = True
+    if (success):
+        stop = False
+        print("SUCCESS! Amazing now we can start the game...")
+        while stop == False:
 
-print("trying to connect")
-success = mambo.connect(num_retries=3)
-print("connected: %s" % success)
+            answers = prompt([
+                {
+                    'type': 'list',
+                    'name': 'operation',
+                    'choices': [
+                        'List current scripts',
+                        'Run a script',
+                        'Delete all scripts (start from scratch)',
+                        'Quit'
+                    ],
+                    'message': 'What do you want to do?',
+                }
+            ])
+            if 'operation' not in answers:
+                stop = True
+                print("Quitting the application... Bye!")
 
-if (success):
-    # get the state information
-    print("sleeping")
-    mambo.smart_sleep(2)
-    mambo.ask_for_state_update()
-    mambo.smart_sleep(2)
+            if answers['operation'] == 'Quit':
+                stop = True
+            if answers['operation'] == 'Delete all scripts (start from scratch)':
+                result = delete_all_scripts()
+            elif answers['operation'] == 'List current scripts':
+                scripts = get_all_scripts()
+                if len(scripts) == 0:
+                    print("⚠️ There are no scripts!")
+                for s in scripts:
+                    print(s)
+            elif answers['operation'] == 'Run a script':
+                scripts = get_all_scripts()
+                if len(scripts) == 0:
+                    print("⚠️ There are no scripts!")
+                    continue
+                answer = prompt([
+                    {
+                        'type': 'list',
+                        'name': 'operation',
+                        'choices': scripts,
+                        'message': 'Choose the script',
+                    }
+                ])
+                if 'operation' not in answer:
+                    stop = True
+                    print("Quitting the application... Bye!")
+                    break
+                
+                content = get_script_content(answer['operation'])
+                with open('temp_script.py', "w+") as f:
+                    f.write(get_file_content(drone_id,content))
+                    f.close()
 
-    print("taking off!")
-    mambo.safe_takeoff(5)
-    
-    
-    
-    print("landing")
-    mambo.safe_land(5)
-    mambo.smart_sleep(5)
+                run_script()
+            answers = None
 
-    print("disconnect")
-    mambo.disconnect()
