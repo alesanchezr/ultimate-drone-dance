@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SplitPane from "react-split-pane";
 import Editor from "./editor";
 import commands from "./_commands.js";
@@ -6,13 +6,35 @@ import Player from "./player";
 
 //include images into your bundle
 
-//create your first component
+//create your first componentx
 export function Home() {
 	const [_showHelp, showHelp] = useState(false);
 	const [code, setCode] = useState(
-		"save_takeoff(5) # this will make the drone start flying"
+		"mambo.save_takeoff(5) # this will make the drone start flying"
 	);
 	const [selectedCommand, setSelectedCommand] = useState(null);
+
+	const [name, setName] = useState(null);
+	const [_name, setTempName] = useState("");
+	if (!name)
+		return (
+			<div className="text-center">
+				<h2>Pick a name for your script!</h2>
+				<input
+					type="text"
+					placeholder="Choose a nickname"
+					className="form-control mb-5 mt-5"
+					onChange={e => setTempName(e.target.value)}
+					value={_name}
+				/>
+				<button
+					type="button"
+					className="btn btn-lg btn-success w-100"
+					onClick={() => setName(_name)}>
+					Choose this name
+				</button>
+			</div>
+		);
 	return (
 		<div className="row bg-black no-gutters">
 			<div className="col-12">
@@ -35,6 +57,7 @@ export function Home() {
 					</div>
 				) : selectedCommand ? (
 					<div className="p-3 btn-dark text-white">
+						<h2>Command: {selectedCommand.name}</h2>
 						<div
 							dangerouslySetInnerHTML={{
 								__html: selectedCommand.description
@@ -64,7 +87,10 @@ export function Home() {
 								<li
 									key={c}
 									onClick={() =>
-										setSelectedCommand(commands[c])
+										setSelectedCommand({
+											name: c,
+											...commands[c]
+										})
 									}>
 									{c}
 								</li>
@@ -87,7 +113,25 @@ export function Home() {
 			</div>
 			<button
 				className="btn form-control btn-success btn-lg btn-upload"
-				onClick={() => null}>
+				onClick={() => {
+					if (
+						confirm(
+							"Are you sure you are ready to send your script?"
+						)
+					) {
+						fetch(
+							"https://assets.breatheco.de/apis/drone-challenge/scripts/" +
+								name,
+							{
+								method: "post",
+								body: code
+							}
+						)
+							.then(resp => resp.json())
+							.then(resp => alert("Your code has been sent"))
+							.catch(error => alert("There has been an error"));
+					}
+				}}>
 				Submit my code
 			</button>
 		</div>
