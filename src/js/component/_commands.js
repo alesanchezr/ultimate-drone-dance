@@ -7,7 +7,7 @@ export default {
 		params: [{ name: "timeout", type: "number" }]
 	},
 	safe_land: {
-		value: "safe_land() # the drone will land",
+		value: "mambo.safe_land() # the drone will land",
 		description: "Command the drone to land",
 		params: []
 	},
