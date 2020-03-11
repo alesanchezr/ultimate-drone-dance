@@ -11,7 +11,7 @@ from pyparrot.Minidrone import Mambo
 # Broken D0:3A:F7:D9:E6:20
 
 mamboAddr = os.environ.get('DRONE_ADDRESS')
-mamboAddr = 'e0:14:60:27:3d:cf'
+mamboAddr = 'd0:3a:87:45:e6:5a'
 print("Address found: ", mamboAddr)
 # make my mambo object
 # remember to set True/False for the wifi depending on if you are using the wifi or the BLE to connect

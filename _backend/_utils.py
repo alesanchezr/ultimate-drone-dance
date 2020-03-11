@@ -9,7 +9,7 @@ class DeviceIDValidator(Validator):
                 message='Please enter a valid drone id with a format like E0:AF:34:QF:43:SD',
                 cursor_position=len(document.text))  # Move cursor to end
 
-HOST = 'https://8080-f0d8e861-4b22-40c7-8de2-e2406c72dbc6.ws-us02.gitpod.io/'
+HOST = 'https://assets.breatheco.de/'
 def delete_all_scripts():
     print("Deleting all scripts ...")
     resp = requests.delete(HOST+"apis/drone-challenge/scripts/all")

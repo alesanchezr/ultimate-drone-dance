@@ -5,12 +5,12 @@ name = "pypi"
 
 [packages]
 untangle = "*"
-pyparrot = "*"
 zeroconf = "*"
 bluepy = "*"
 python-dotenv = "*"
 pyinquirer = "*"
 requests = "*"
+pyparrot = "*"
 
 [dev-packages]
 
